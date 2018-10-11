@@ -1,16 +1,10 @@
 package com.capgemini.onlineshopping.service.impl;
-
-
-
-
-import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import com.capgemini.onlineshopping.entity.LineItem;
 import com.capgemini.onlineshopping.entity.Order;
 import com.capgemini.onlineshopping.exceptions.OrderNotFoundException;
@@ -51,7 +45,7 @@ public class OrderServiceImpl implements OrderService {
 	@Override
 	public Set<LineItem> getLineItems(int customerId) {
 		Set<LineItem> tempSet = itemCart.get(customerId);
-		return tempSet;
+		return itemCart.get(tempSet);
 	}
 
 	@Override
@@ -74,15 +68,25 @@ public class OrderServiceImpl implements OrderService {
 	}
 
 	@Override
-	public void cancelOrder(int orderId) throws OrderNotFoundException {
-		// TODO Auto-generated method stub
+	public Order cancelOrder(int orderId) throws OrderNotFoundException {
+		Optional<Order> optional = orderRepository.findById(orderId);
+		if (optional.isPresent()) {
+			optional.get().setStatus("cancelled");
+			return orderRepository.save(optional.get());
+			
+		}
+		return null;
+		
+		
 
 	}
 
 	@Override
-	public void deleteOrder(Order order) throws OrderNotFoundException {
-		// TODO Auto-generated method stub
+	public void deleteOrder(int orderId) throws OrderNotFoundException {
+		orderRepository.deleteById(orderId);
 
 	}
+
+	
 
 }
